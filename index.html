@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/10044/10044464.png">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='white'/%3E%3Crect x='55' y='20' width='70' height='140' rx='35' fill='white' stroke='%23333' stroke-width='4'/%3E%3CclipPath id='p'%3E%3Crect x='55' y='20' width='70' height='140' rx='35'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23p)'%3E%3Crect width='200' height='300' fill='white'/%3E%3Cpath d='M0 0 L300 300 M-40 0 L260 300 M-80 0 L220 300 M40 0 L340 300 M80 0 L380 300 M120 0 L420 300 M160 0 L460 300' stroke='%23ef4444' stroke-width='25'/%3E%3Cpath d='M-20 0 L280 300 M-60 0 L240 300 M-100 0 L200 300 M20 0 L320 300 M60 0 L360 300 M100 0 L400 300 M140 0 L440 300' stroke='%233b82f6' stroke-width='25'/%3E%3C/g%3E%3Crect x='55' y='20' width='70' height='140' rx='35' fill='none' stroke='%23333' stroke-width='4'/%3E%3C/svg%3E">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -17,22 +17,17 @@
             -webkit-tap-highlight-color: transparent; 
             font-family: 'Inter', sans-serif; 
             padding-bottom: 100px; 
-            /* This ensures the barber pole header sits below the iPhone notch */
             padding-top: env(safe-area-inset-top);
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        
         .fab { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 20px; background: #007AFF; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); z-index: 50; transition: transform 0.2s; }
         .fab:active { transform: scale(0.9); }
-        
         .appt-card { border-radius: 20px; transition: all 0.2s; border: 1px solid #f1f5f9; }
         .appt-card:active { background: #f8fafc; transform: translateY(2px); }
         .card-today { border-left: 6px solid #007AFF; }
         .card-future { border-left: 6px solid #A855F7; }
-
         .nav-icon { font-size: 28px; }
-        
         #options-menu { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: none; align-items: flex-end; backdrop-filter: blur(4px); }
         .menu-content { background: white; width: 100%; border-radius: 32px 32px 0 0; padding: 24px; padding-bottom: 50px; animation: slideUp 0.2s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -46,13 +41,11 @@
                  style="background: repeating-linear-gradient(45deg, #ef4444, #ef4444 10px, #ffffff 10px, #ffffff 20px, #3b82f6 20px, #3b82f6 30px);">
                 <div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
             </div>
-            
             <div class="flex flex-col">
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-black-500 leading-none">HAUWHENUA's</span>
-                <span id="page-title" class="font-black text-black-900 uppercase tracking-tight text-xl leading-tight">Dashboard</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-black-500 leading-none">Book with</span>
+                <span class="font-black text-black-900 uppercase tracking-tight text-xl leading-tight">HAUWHENUA</span>
             </div>
         </div>
-        
         <div class="flex items-center gap-2">
             <span class="material-icons-round text-gray-800">content_cut</span>
             <button onclick="showHistory()" id="history-btn" class="hidden text-gray-400">
@@ -67,9 +60,7 @@
                 <h2 class="text-2xl font-bold text-gray-900">What's up bro! 👋</h2>
                 <p class="text-gray-500 text-sm">You have <span id="appt-count" class="font-bold text-blue-600">0</span> appointments coming up.</p>
             </div>
-
             <div id="home-list" class="space-y-4"></div>
-
             <div class="mt-10 grid grid-cols-2 gap-4">
                 <button onclick="showTab('calendar')" class="p-5 bg-white rounded-3xl shadow-sm border border-gray-100 text-left">
                     <span class="material-icons-round text-blue-500 mb-2">calendar_today</span>
@@ -164,10 +155,7 @@
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            document.getElementById('page-title').innerText = tabId === 'home' ? 'Dashboard' : tabId.charAt(0).toUpperCase() + tabId.slice(1);
-            
             document.getElementById('history-btn').classList.toggle('hidden', tabId !== 'calendar');
-
             ['home', 'calendar', 'clients'].forEach(id => {
                 const btn = document.getElementById('nav-' + id);
                 if (btn) btn.classList.replace('text-blue-600', 'text-gray-300');
@@ -184,42 +172,22 @@
             const today = new Date(); today.setHours(0,0,0,0);
             const upcoming = appointments.filter(a => new Date(a.date + 'T00:00:00') >= today)
                 .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
-
             document.getElementById('appt-count').innerText = upcoming.length;
             homeList.innerHTML = upcoming.length ? '' : '<div class="bg-white p-12 rounded-[32px] text-center text-gray-300 border border-dashed">Clear schedule for now.</div>';
-            
             upcoming.forEach(app => {
                 const isToday = new Date(app.date + 'T00:00:00').getTime() === today.getTime();
-                homeList.innerHTML += `
-                    <div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 appt-card shadow-sm ${isToday ? 'card-today' : 'card-future'} flex justify-between items-center">
-                        <div>
-                            <div class="text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-blue-600' : 'text-purple-600'} mb-1">${isToday ? 'Today' : app.date}</div>
-                            <div class="font-bold text-gray-900 text-lg">${app.client}</div>
-                            <div class="text-sm text-gray-400 flex items-center gap-1"><span class="material-icons-round text-sm">place</span>${app.loc || 'No location'}</div>
-                        </div>
-                        <div class="text-right font-black text-gray-900">${app.time}</div>
-                    </div>`;
+                homeList.innerHTML += `<div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 appt-card shadow-sm ${isToday ? 'card-today' : 'card-future'} flex justify-between items-center"><div><div class="text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-blue-600' : 'text-purple-600'} mb-1">${isToday ? 'Today' : app.date}</div><div class="font-bold text-gray-900 text-lg">${app.client}</div><div class="text-sm text-gray-400 flex items-center gap-1"><span class="material-icons-round text-sm">place</span>${app.loc || 'No location'}</div></div><div class="text-right font-black text-gray-900">${app.time}</div></div>`;
             });
         }
 
         function showHistory() { showTab('history'); }
-
         function renderHistory() {
             const historyList = document.getElementById('history-list');
             const today = new Date(); today.setHours(0,0,0,0);
-            const past = appointments.filter(a => new Date(a.date + 'T00:00:00') < today)
-                .sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
-
+            const past = appointments.filter(a => new Date(a.date + 'T00:00:00') < today).sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
             historyList.innerHTML = past.length ? '' : '<div class="text-center py-10 text-gray-300">No past activity.</div>';
             past.forEach(app => {
-                historyList.innerHTML += `
-                    <div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center opacity-60">
-                        <div>
-                            <div class="text-[10px] font-bold text-gray-400 mb-1">${app.date}</div>
-                            <div class="font-bold text-gray-700">${app.client}</div>
-                        </div>
-                        <div class="text-right text-gray-400 text-sm font-bold">${app.time}</div>
-                    </div>`;
+                historyList.innerHTML += `<div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center opacity-60"><div><div class="text-[10px] font-bold text-gray-400 mb-1">${app.date}</div><div class="font-bold text-gray-700">${app.client}</div></div><div class="text-right text-gray-400 text-sm font-bold">${app.time}</div></div>`;
             });
         }
 
@@ -229,11 +197,7 @@
             document.getElementById('modal-title').innerText = app ? "Edit Details" : "New Booking";
             delBtn.classList.toggle('hidden', !app);
             let clientOptions = clients.map(c => `<option value="${c.name}" ${(app && app.client === c.name) || c.name === preselectedClient ? 'selected' : ''}>${c.name}</option>`).join('');
-            body.innerHTML = `
-                <select id="a-client" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">${clientOptions || '<option disabled>Add a client first</option>'}</select>
-                <input id="a-date" type="date" value="${app ? app.date : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">
-                <input id="a-time" type="time" value="${app ? app.time : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">
-                <input id="a-loc" placeholder="Location" value="${app ? app.loc : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">`;
+            body.innerHTML = `<select id="a-client" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">${clientOptions || '<option disabled>Add a client first</option>'}</select><input id="a-date" type="date" value="${app ? app.date : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none"><input id="a-time" type="time" value="${app ? app.time : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none"><input id="a-loc" placeholder="Location" value="${app ? app.loc : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">`;
             document.getElementById('modal').classList.remove('hidden');
             saveBtn.onclick = () => {
                 const cVal = document.getElementById('a-client').value, dVal = document.getElementById('a-date').value, tVal = document.getElementById('a-time').value;
@@ -260,10 +224,7 @@
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const hasAppt = appointments.some(a => a.date === dateStr);
                 const isToday = new Date().toISOString().split('T')[0] === dateStr;
-                grid.innerHTML += `<div class="h-12 flex flex-col items-center justify-center cursor-pointer relative" onclick="viewDay('${dateStr}', this)">
-                    <span class="${isToday ? 'w-8 h-8 bg-blue-600 text-white rounded-full' : 'text-gray-700'} flex items-center justify-center font-bold">${day}</span>
-                    ${hasAppt ? '<div class="w-1 h-1 bg-blue-400 rounded-full mt-1"></div>' : ''}
-                </div>`;
+                grid.innerHTML += `<div class="h-12 flex flex-col items-center justify-center cursor-pointer relative" onclick="viewDay('${dateStr}', this)"><span class="${isToday ? 'w-8 h-8 bg-blue-600 text-white rounded-full' : 'text-gray-700'} flex items-center justify-center font-bold">${day}</span>${hasAppt ? '<div class="w-1 h-1 bg-blue-400 rounded-full mt-1"></div>' : ''}</div>`;
             }
         }
 
@@ -279,13 +240,7 @@
         function renderClients() {
             const list = document.getElementById('client-list'); list.innerHTML = '';
             clients.forEach((c, idx) => {
-                list.innerHTML += `<div class="bg-white p-5 rounded-3xl flex justify-between items-center border border-gray-100 shadow-sm">
-                    <div onclick="openClientModal(${idx})" class="flex-grow flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><span class="material-icons-round">person</span></div>
-                        <div><div class="font-bold text-gray-900">${c.name}</div><div class="text-xs text-gray-400">${c.phone}</div></div>
-                    </div>
-                    <button onclick="openAppointmentModal('${c.name}')" class="text-blue-600 bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center"><span class="material-icons-round">add</span></button>
-                </div>`;
+                list.innerHTML += `<div class="bg-white p-5 rounded-3xl flex justify-between items-center border border-gray-100 shadow-sm"><div onclick="openClientModal(${idx})" class="flex-grow flex items-center gap-4"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><span class="material-icons-round">person</span></div><div><div class="font-bold text-gray-900">${c.name}</div><div class="text-xs text-gray-400">${c.phone}</div></div></div><button onclick="openAppointmentModal('${c.name}')" class="text-blue-600 bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center"><span class="material-icons-round">add</span></button></div>`;
             });
         }
 
@@ -309,5 +264,3 @@
     </script>
 </body>
 </html>
-
-
