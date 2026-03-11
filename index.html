@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        body { -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; padding-bottom: 100px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Smooth Floating Button */
+        .fab { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 20px; background: #007AFF; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); z-index: 50; transition: transform 0.2s; }
+        .fab:active { transform: scale(0.9); }
+        
+        /* Modern Cards */
+        .appt-card { border-radius: 20px; transition: all 0.2s; border: 1px solid #f1f5f9; }
+        .appt-card:active { background: #f8fafc; transform: translateY(2px); }
+        .card-today { border-left: 6px solid #007AFF; }
+        .card-future { border-left: 6px solid #A855F7; }
+
+        /* Icon Styling */
+        .nav-icon { font-size: 28px; }
+        
+        #options-menu { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: none; align-items: flex-end; backdrop-filter: blur(4px); }
+        .menu-content { background: white; width: 100%; border-radius: 32px 32px 0 0; padding: 24px; padding-bottom: 50px; animation: slideUp 0.2s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-[#FBFBFD]">
+
+<header class="bg-white/80 backdrop-blur-md p-4 sticky top-0 z-40 flex justify-between items-center border-b border-gray-100">
+        <div class="flex items-center gap-3">
+            <div class="relative w-7 h-10 rounded-full border-2 border-gray-800 overflow-hidden shadow-sm" 
+                 style="background: repeating-linear-gradient(45deg, #ef4444, #ef4444 10px, #ffffff 10px, #ffffff 20px, #3b82f6 20px, #3b82f6 30px);">
+                <div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
+            </div>
+            
+            <div class="flex flex-col">
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-black-500 leading-none">Book with</span>
+                <span id="page-title" class="font-black text-black-900 uppercase tracking-tight text-xl leading-tight">HAUWHENUA</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <span class="material-icons-round text-gray-800">content_cut</span>
+            <button onclick="showHistory()" id="history-btn" class="hidden text-gray-400">
+                <span class="material-icons-round">history</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="p-5">
+        <section id="home" class="tab-content active">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">What's up bro! 👋</h2>
+                <p class="text-gray-500 text-sm">You have <span id="appt-count" class="font-bold text-blue-600">0</span> appointments coming up.</p>
+            </div>
+
+            <div id="home-list" class="space-y-4"></div>
+
+            <div class="mt-10 grid grid-cols-2 gap-4">
+                <button onclick="showTab('calendar')" class="p-5 bg-white rounded-3xl shadow-sm border border-gray-100 text-left">
+                    <span class="material-icons-round text-blue-500 mb-2">calendar_today</span>
+                    <div class="font-bold text-gray-800">Schedule</div>
+                </button>
+                <button onclick="showTab('clients')" class="p-5 bg-white rounded-3xl shadow-sm border border-gray-100 text-left">
+                    <span class="material-icons-round text-purple-500 mb-2">people_alt</span>
+                    <div class="font-bold text-gray-800">Clients</div>
+                </button>
+            </div>
+        </section>
+
+        <section id="calendar" class="tab-content">
+            <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div class="flex justify-between items-center p-5">
+                    <button onclick="changeMonth(-1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50"><span class="material-icons-round text-gray-600">chevron_left</span></button>
+                    <h2 id="month-label" class="font-bold text-gray-800">Month Year</h2>
+                    <button onclick="changeMonth(1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50"><span class="material-icons-round text-gray-600">chevron_right</span></button>
+                </div>
+                <div class="grid grid-cols-7 text-center text-[10px] font-bold text-gray-400 pb-2">
+                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                </div>
+                <div id="calendar-days" class="grid grid-cols-7 text-sm p-2 pb-6"></div>
+            </div>
+            <div id="day-detail" class="space-y-3"></div>
+        </section>
+
+        <section id="history" class="tab-content">
+            <button onclick="showTab('calendar')" class="flex items-center text-blue-600 font-bold mb-4 gap-1">
+                <span class="material-icons-round text-sm">arrow_back</span> Back
+            </button>
+            <div id="history-list" class="space-y-3"></div>
+        </section>
+
+        <section id="clients" class="tab-content">
+            <div id="client-list" class="space-y-3"></div>
+        </section>
+    </main>
+
+    <div class="fab" onclick="toggleMenu(true)">
+        <span class="material-icons-round">more_vert</span>
+    </div>
+
+    <nav class="fixed bottom-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-100 flex justify-around py-4 pb-8 z-40">
+        <button onclick="showTab('home')" id="nav-home" class="text-blue-600"><span class="material-icons-round nav-icon">home</span></button>
+        <button onclick="showTab('calendar')" id="nav-calendar" class="text-gray-300"><span class="material-icons-round nav-icon">event_note</span></button>
+        <button onclick="showTab('clients')" id="nav-clients" class="text-gray-300"><span class="material-icons-round nav-icon">group</span></button>
+    </nav>
+
+    <div id="options-menu" onclick="toggleMenu(false)">
+        <div class="menu-content" onclick="event.stopPropagation()">
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
+            <div class="space-y-3">
+                <button onclick="menuAction('book')" class="w-full p-5 bg-blue-50 text-blue-700 font-bold rounded-2xl text-left flex items-center gap-4">
+                    <span class="material-icons-round">add_task</span> Book Appointment
+                </button>
+                <button onclick="menuAction('client')" class="w-full p-5 bg-gray-50 text-gray-700 font-bold rounded-2xl text-left flex items-center gap-4">
+                    <span class="material-icons-round">person_add</span> New Client
+                </button>
+                <button onclick="menuAction('reset')" class="w-full p-5 text-red-400 font-medium rounded-2xl text-left flex items-center gap-4">
+                    <span class="material-icons-round">delete_sweep</span> Wipe Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black/60 hidden z-[150] flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-white rounded-[40px] p-8 w-full max-w-sm shadow-2xl">
+            <h3 id="modal-title" class="font-black text-2xl mb-6 text-gray-900">Action</h3>
+            <div id="modal-body" class="space-y-4"></div>
+            <div class="flex flex-col mt-8 gap-3">
+                <button id="modal-save" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-200">Save Changes</button>
+                <button id="modal-delete" class="w-full py-2 text-red-500 font-bold hidden">Delete</button>
+                <button onclick="closeModal()" class="w-full py-2 text-gray-400 font-medium">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ... [All previous JS logic remains exactly the same for functionality] ... */
+        // Note: I've updated the render functions slightly to use the new Icon IDs
+        let clients = JSON.parse(localStorage.getItem('clients')) || [];
+        let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+        let currentViewDate = new Date();
+
+        function toggleMenu(show) { document.getElementById('options-menu').style.display = show ? 'flex' : 'none'; }
+        function menuAction(type) {
+            toggleMenu(false);
+            if (type === 'book') openAppointmentModal();
+            if (type === 'client') openClientModal();
+            if (type === 'reset') { if(confirm("Wipe ALL data?")) { localStorage.clear(); location.reload(); } }
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('page-title').innerText = tabId === 'home' ? 'Dashboard' : tabId.charAt(0).toUpperCase() + tabId.slice(1);
+            
+            // Toggle history button visibility
+            document.getElementById('history-btn').classList.toggle('hidden', tabId !== 'calendar');
+
+            ['home', 'calendar', 'clients'].forEach(id => {
+                const btn = document.getElementById('nav-' + id);
+                if (btn) btn.classList.replace('text-blue-600', 'text-gray-300');
+            });
+            const activeNav = document.getElementById('nav-' + (tabId === 'history' ? 'calendar' : tabId));
+            if (activeNav) activeNav.classList.replace('text-gray-300', 'text-blue-600');
+            renderAll();
+        }
+
+        function renderAll() { renderHomepage(); renderCalendar(); renderClients(); renderHistory(); }
+
+        function renderHomepage() {
+            const homeList = document.getElementById('home-list');
+            const today = new Date(); today.setHours(0,0,0,0);
+            const upcoming = appointments.filter(a => new Date(a.date + 'T00:00:00') >= today)
+                .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
+            document.getElementById('appt-count').innerText = upcoming.length;
+            homeList.innerHTML = upcoming.length ? '' : '<div class="bg-white p-12 rounded-[32px] text-center text-gray-300 border border-dashed">Clear schedule for now.</div>';
+            
+            upcoming.forEach(app => {
+                const isToday = new Date(app.date + 'T00:00:00').getTime() === today.getTime();
+                homeList.innerHTML += `
+                    <div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 appt-card shadow-sm ${isToday ? 'card-today' : 'card-future'} flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-blue-600' : 'text-purple-600'} mb-1">${isToday ? 'Today' : app.date}</div>
+                            <div class="font-bold text-gray-900 text-lg">${app.client}</div>
+                            <div class="text-sm text-gray-400 flex items-center gap-1"><span class="material-icons-round text-sm">place</span>${app.loc || 'No location'}</div>
+                        </div>
+                        <div class="text-right font-black text-gray-900">${app.time}</div>
+                    </div>`;
+            });
+        }
+
+        function showHistory() { showTab('history'); }
+
+        function renderHistory() {
+            const historyList = document.getElementById('history-list');
+            const today = new Date(); today.setHours(0,0,0,0);
+            const past = appointments.filter(a => new Date(a.date + 'T00:00:00') < today)
+                .sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
+
+            historyList.innerHTML = past.length ? '' : '<div class="text-center py-10 text-gray-300">No past activity.</div>';
+            past.forEach(app => {
+                historyList.innerHTML += `
+                    <div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center opacity-60">
+                        <div>
+                            <div class="text-[10px] font-bold text-gray-400 mb-1">${app.date}</div>
+                            <div class="font-bold text-gray-700">${app.client}</div>
+                        </div>
+                        <div class="text-right text-gray-400 text-sm font-bold">${app.time}</div>
+                    </div>`;
+            });
+        }
+
+        function openAppointmentModal(preselectedClient = null, editId = null) {
+            const body = document.getElementById('modal-body'), delBtn = document.getElementById('modal-delete'), saveBtn = document.getElementById('modal-save');
+            let app = editId ? appointments.find(a => a.id === editId) : null;
+            document.getElementById('modal-title').innerText = app ? "Edit Details" : "New Booking";
+            delBtn.classList.toggle('hidden', !app);
+            let clientOptions = clients.map(c => `<option value="${c.name}" ${(app && app.client === c.name) || c.name === preselectedClient ? 'selected' : ''}>${c.name}</option>`).join('');
+            body.innerHTML = `
+                <select id="a-client" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">${clientOptions || '<option disabled>Add a client first</option>'}</select>
+                <input id="a-date" type="date" value="${app ? app.date : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">
+                <input id="a-time" type="time" value="${app ? app.time : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">
+                <input id="a-loc" placeholder="Location" value="${app ? app.loc : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">`;
+            document.getElementById('modal').classList.remove('hidden');
+            saveBtn.onclick = () => {
+                const cVal = document.getElementById('a-client').value, dVal = document.getElementById('a-date').value, tVal = document.getElementById('a-time').value;
+                if(!cVal || !dVal || !tVal) return alert("Fill required fields.");
+                const conflict = appointments.find(a => a.date === dVal && a.time === tVal && a.id !== editId);
+                if (conflict && !confirm(`CONFLICT: ${conflict.client} is booked then. Save?`)) return;
+                if(app) {
+                    const idx = appointments.findIndex(a => a.id === editId);
+                    appointments[idx] = { ...appointments[idx], client: cVal, date: dVal, time: tVal, loc: document.getElementById('a-loc').value };
+                } else {
+                    appointments.push({ id: Date.now(), client: cVal, date: dVal, time: tVal, loc: document.getElementById('a-loc').value });
+                }
+                saveAndRefresh();
+            };
+            delBtn.onclick = () => { if(confirm("Delete?")) { appointments = appointments.filter(a => a.id !== editId); saveAndRefresh(); } };
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-days'), label = document.getElementById('month-label');
+            grid.innerHTML = '';
+            const year = currentViewDate.getFullYear(), month = currentViewDate.getMonth();
+            label.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentViewDate);
+            const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasAppt = appointments.some(a => a.date === dateStr);
+                const isToday = new Date().toISOString().split('T')[0] === dateStr;
+                grid.innerHTML += `<div class="h-12 flex flex-col items-center justify-center cursor-pointer relative" onclick="viewDay('${dateStr}', this)">
+                    <span class="${isToday ? 'w-8 h-8 bg-blue-600 text-white rounded-full' : 'text-gray-700'} flex items-center justify-center font-bold">${day}</span>
+                    ${hasAppt ? '<div class="w-1 h-1 bg-blue-400 rounded-full mt-1"></div>' : ''}
+                </div>`;
+            }
+        }
+
+        function viewDay(dateStr, el) {
+            const dayAppts = appointments.filter(a => a.date === dateStr);
+            const detail = document.getElementById('day-detail');
+            detail.innerHTML = `<h3 class="text-xs font-black text-gray-400 uppercase tracking-widest px-2 mb-2">${dateStr}</h3>`;
+            dayAppts.forEach(app => {
+                detail.innerHTML += `<div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-4 rounded-2xl border border-gray-100 flex justify-between shadow-sm items-center"><span class="font-bold text-gray-800">${app.client}</span><span class="text-blue-600 font-bold">${app.time}</span></div>`;
+            });
+        }
+
+        function renderClients() {
+            const list = document.getElementById('client-list'); list.innerHTML = '';
+            clients.forEach((c, idx) => {
+                list.innerHTML += `<div class="bg-white p-5 rounded-3xl flex justify-between items-center border border-gray-100 shadow-sm">
+                    <div onclick="openClientModal(${idx})" class="flex-grow flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><span class="material-icons-round">person</span></div>
+                        <div><div class="font-bold text-gray-900">${c.name}</div><div class="text-xs text-gray-400">${c.phone}</div></div>
+                    </div>
+                    <button onclick="openAppointmentModal('${c.name}')" class="text-blue-600 bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center"><span class="material-icons-round">add</span></button>
+                </div>`;
+            });
+        }
+
+        function openClientModal(idx = null) {
+            const body = document.getElementById('modal-body'), delBtn = document.getElementById('modal-delete'), client = idx !== null ? clients[idx] : null;
+            document.getElementById('modal-title').innerText = client ? "Edit Client" : "Add Client";
+            delBtn.classList.toggle('hidden', !client);
+            body.innerHTML = `<input id="c-name" value="${client ? client.name : ''}" placeholder="Name" class="w-full bg-gray-50 p-4 rounded-2xl"><input id="c-phone" value="${client ? client.phone : ''}" placeholder="Phone" type="tel" class="w-full bg-gray-50 p-4 rounded-2xl">`;
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal-save').onclick = () => {
+                const name = document.getElementById('c-name').value;
+                if(name) { if(client) clients[idx] = { name, phone: document.getElementById('c-phone').value }; else clients.push({ name, phone: document.getElementById('c-phone').value }); saveAndRefresh(); }
+            };
+            delBtn.onclick = () => { if(confirm("Delete?")) { clients.splice(idx, 1); saveAndRefresh(); } };
+        }
+
+        function changeMonth(dir) { currentViewDate.setMonth(currentViewDate.getMonth() + dir); renderCalendar(); }
+        function saveAndRefresh() { localStorage.setItem('clients', JSON.stringify(clients)); localStorage.setItem('appointments', JSON.stringify(appointments)); closeModal(); renderAll(); }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+        renderAll();
+    </script>
+</body>
+</html>
