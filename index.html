@@ -2,26 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Business Pro</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2972/2972161.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <style>
-        body { -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; padding-bottom: 100px; }
+        /* This fix prevents your header from being hidden behind the iPhone notch */
+        body { 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: 'Inter', sans-serif; 
+            padding-bottom: 100px; 
+            padding-top: env(safe-area-inset-top);
+        }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        /* Smooth Floating Button */
         .fab { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 20px; background: #007AFF; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); z-index: 50; transition: transform 0.2s; }
         .fab:active { transform: scale(0.9); }
         
-        /* Modern Cards */
         .appt-card { border-radius: 20px; transition: all 0.2s; border: 1px solid #f1f5f9; }
         .appt-card:active { background: #f8fafc; transform: translateY(2px); }
         .card-today { border-left: 6px solid #007AFF; }
         .card-future { border-left: 6px solid #A855F7; }
 
-        /* Icon Styling */
         .nav-icon { font-size: 28px; }
         
         #options-menu { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: none; align-items: flex-end; backdrop-filter: blur(4px); }
@@ -31,7 +39,7 @@
 </head>
 <body class="bg-[#FBFBFD]">
 
-<header class="bg-white/80 backdrop-blur-md p-4 sticky top-0 z-40 flex justify-between items-center border-b border-gray-100">
+    <header class="bg-white/80 backdrop-blur-md p-4 sticky top-0 z-40 flex justify-between items-center border-b border-gray-100">
         <div class="flex items-center gap-3">
             <div class="relative w-7 h-10 rounded-full border-2 border-gray-800 overflow-hidden shadow-sm" 
                  style="background: repeating-linear-gradient(45deg, #ef4444, #ef4444 10px, #ffffff 10px, #ffffff 20px, #3b82f6 20px, #3b82f6 30px);">
@@ -140,8 +148,6 @@
     </div>
 
     <script>
-        /* ... [All previous JS logic remains exactly the same for functionality] ... */
-        // Note: I've updated the render functions slightly to use the new Icon IDs
         let clients = JSON.parse(localStorage.getItem('clients')) || [];
         let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
         let currentViewDate = new Date();
@@ -159,7 +165,6 @@
             document.getElementById(tabId).classList.add('active');
             document.getElementById('page-title').innerText = tabId === 'home' ? 'Dashboard' : tabId.charAt(0).toUpperCase() + tabId.slice(1);
             
-            // Toggle history button visibility
             document.getElementById('history-btn').classList.toggle('hidden', tabId !== 'calendar');
 
             ['home', 'calendar', 'clients'].forEach(id => {
@@ -232,8 +237,6 @@
             saveBtn.onclick = () => {
                 const cVal = document.getElementById('a-client').value, dVal = document.getElementById('a-date').value, tVal = document.getElementById('a-time').value;
                 if(!cVal || !dVal || !tVal) return alert("Fill required fields.");
-                const conflict = appointments.find(a => a.date === dVal && a.time === tVal && a.id !== editId);
-                if (conflict && !confirm(`CONFLICT: ${conflict.client} is booked then. Save?`)) return;
                 if(app) {
                     const idx = appointments.findIndex(a => a.id === editId);
                     appointments[idx] = { ...appointments[idx], client: cVal, date: dVal, time: tVal, loc: document.getElementById('a-loc').value };
