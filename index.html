@@ -5,24 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HAUWHENUA</title>
     
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4829/4829701.png">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/4829/4829701.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <style>
-        body { -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; padding-bottom: 100px; padding-top: env(safe-area-inset-top); }
+        body { 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: 'Inter', sans-serif; 
+            padding-bottom: 100px; 
+            padding-top: env(safe-area-inset-top);
+        }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        
         .fab { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; border-radius: 20px; background: #007AFF; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,122,255,0.3); z-index: 50; transition: transform 0.2s; }
         .fab:active { transform: scale(0.9); }
+        
         .appt-card { border-radius: 20px; transition: all 0.2s; border: 1px solid #f1f5f9; }
         .appt-card:active { background: #f8fafc; transform: translateY(2px); }
         .card-today { border-left: 6px solid #007AFF; }
         .card-future { border-left: 6px solid #A855F7; }
+
         .nav-icon { font-size: 28px; }
+        
         #options-menu { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: none; align-items: flex-end; backdrop-filter: blur(4px); }
         .menu-content { background: white; width: 100%; border-radius: 32px 32px 0 0; padding: 24px; padding-bottom: 50px; animation: slideUp 0.2s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -38,8 +47,8 @@
             </div>
             
             <div class="flex flex-col">
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-black-500 leading-none">Book with</span>
-                <span id="page-title" class="font-black text-black-900 uppercase tracking-tight text-xl leading-tight">HAUWHENUA</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 leading-none">Book with</span>
+                <span class="font-black text-black-900 uppercase tracking-tight text-xl leading-tight">HAUWHENUA</span>
             </div>
         </div>
         
@@ -142,6 +151,7 @@
         let currentViewDate = new Date();
 
         function toggleMenu(show) { document.getElementById('options-menu').style.display = show ? 'flex' : 'none'; }
+        
         function menuAction(type) {
             toggleMenu(false);
             if (type === 'book') openAppointmentModal();
@@ -152,11 +162,8 @@
         function showTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            
-            // This is where the header name stays "HAUWHENUA" instead of switching to "Dashboard"
-            document.getElementById('page-title').innerText = "HAUWHENUA";
-            
             document.getElementById('history-btn').classList.toggle('hidden', tabId !== 'calendar');
+
             ['home', 'calendar', 'clients'].forEach(id => {
                 const btn = document.getElementById('nav-' + id);
                 if (btn) btn.classList.replace('text-blue-600', 'text-gray-300');
@@ -173,22 +180,42 @@
             const today = new Date(); today.setHours(0,0,0,0);
             const upcoming = appointments.filter(a => new Date(a.date + 'T00:00:00') >= today)
                 .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
             document.getElementById('appt-count').innerText = upcoming.length;
             homeList.innerHTML = upcoming.length ? '' : '<div class="bg-white p-12 rounded-[32px] text-center text-gray-300 border border-dashed">Clear schedule for now.</div>';
+            
             upcoming.forEach(app => {
                 const isToday = new Date(app.date + 'T00:00:00').getTime() === today.getTime();
-                homeList.innerHTML += `<div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 appt-card shadow-sm ${isToday ? 'card-today' : 'card-future'} flex justify-between items-center"><div><div class="text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-blue-600' : 'text-purple-600'} mb-1">${isToday ? 'Today' : app.date}</div><div class="font-bold text-gray-900 text-lg">${app.client}</div><div class="text-sm text-gray-400 flex items-center gap-1"><span class="material-icons-round text-sm">place</span>${app.loc || 'No location'}</div></div><div class="text-right font-black text-gray-900">${app.time}</div></div>`;
+                homeList.innerHTML += `
+                    <div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 appt-card shadow-sm ${isToday ? 'card-today' : 'card-future'} flex justify-between items-center">
+                        <div>
+                            <div class="text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-blue-600' : 'text-purple-600'} mb-1">${isToday ? 'Today' : app.date}</div>
+                            <div class="font-bold text-gray-900 text-lg">${app.client}</div>
+                            <div class="text-sm text-gray-400 flex items-center gap-1"><span class="material-icons-round text-sm">place</span>${app.loc || 'No location'}</div>
+                        </div>
+                        <div class="text-right font-black text-gray-900">${app.time}</div>
+                    </div>`;
             });
         }
 
         function showHistory() { showTab('history'); }
+
         function renderHistory() {
             const historyList = document.getElementById('history-list');
             const today = new Date(); today.setHours(0,0,0,0);
-            const past = appointments.filter(a => new Date(a.date + 'T00:00:00') < today).sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
+            const past = appointments.filter(a => new Date(a.date + 'T00:00:00') < today)
+                .sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
+
             historyList.innerHTML = past.length ? '' : '<div class="text-center py-10 text-gray-300">No past activity.</div>';
             past.forEach(app => {
-                historyList.innerHTML += `<div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center opacity-60"><div><div class="text-[10px] font-bold text-gray-400 mb-1">${app.date}</div><div class="font-bold text-gray-700">${app.client}</div></div><div class="text-right text-gray-400 text-sm font-bold">${app.time}</div></div>`;
+                historyList.innerHTML += `
+                    <div onclick="openAppointmentModal(null, ${app.id})" class="bg-white p-5 rounded-2xl border border-gray-100 flex justify-between items-center opacity-60">
+                        <div>
+                            <div class="text-[10px] font-bold text-gray-400 mb-1">${app.date}</div>
+                            <div class="font-bold text-gray-700">${app.client}</div>
+                        </div>
+                        <div class="text-right text-gray-400 text-sm font-bold">${app.time}</div>
+                    </div>`;
             });
         }
 
@@ -198,7 +225,11 @@
             document.getElementById('modal-title').innerText = app ? "Edit Details" : "New Booking";
             delBtn.classList.toggle('hidden', !app);
             let clientOptions = clients.map(c => `<option value="${c.name}" ${(app && app.client === c.name) || c.name === preselectedClient ? 'selected' : ''}>${c.name}</option>`).join('');
-            body.innerHTML = `<select id="a-client" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">${clientOptions || '<option disabled>Add a client first</option>'}</select><input id="a-date" type="date" value="${app ? app.date : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none"><input id="a-time" type="time" value="${app ? app.time : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none"><input id="a-loc" placeholder="Location" value="${app ? app.loc : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">`;
+            body.innerHTML = `
+                <select id="a-client" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">${clientOptions || '<option disabled>Add a client first</option>'}</select>
+                <input id="a-date" type="date" value="${app ? app.date : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">
+                <input id="a-time" type="time" value="${app ? app.time : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">
+                <input id="a-loc" placeholder="Location" value="${app ? app.loc : ''}" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-2xl outline-none">`;
             document.getElementById('modal').classList.remove('hidden');
             saveBtn.onclick = () => {
                 const cVal = document.getElementById('a-client').value, dVal = document.getElementById('a-date').value, tVal = document.getElementById('a-time').value;
@@ -225,7 +256,10 @@
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const hasAppt = appointments.some(a => a.date === dateStr);
                 const isToday = new Date().toISOString().split('T')[0] === dateStr;
-                grid.innerHTML += `<div class="h-12 flex flex-col items-center justify-center cursor-pointer relative" onclick="viewDay('${dateStr}', this)"><span class="${isToday ? 'w-8 h-8 bg-blue-600 text-white rounded-full' : 'text-gray-700'} flex items-center justify-center font-bold">${day}</span>${hasAppt ? '<div class="w-1 h-1 bg-blue-400 rounded-full mt-1"></div>' : ''}</div>`;
+                grid.innerHTML += `<div class="h-12 flex flex-col items-center justify-center cursor-pointer relative" onclick="viewDay('${dateStr}', this)">
+                    <span class="${isToday ? 'w-8 h-8 bg-blue-600 text-white rounded-full' : 'text-gray-700'} flex items-center justify-center font-bold">${day}</span>
+                    ${hasAppt ? '<div class="w-1 h-1 bg-blue-400 rounded-full mt-1"></div>' : ''}
+                </div>`;
             }
         }
 
@@ -241,7 +275,13 @@
         function renderClients() {
             const list = document.getElementById('client-list'); list.innerHTML = '';
             clients.forEach((c, idx) => {
-                list.innerHTML += `<div class="bg-white p-5 rounded-3xl flex justify-between items-center border border-gray-100 shadow-sm"><div onclick="openClientModal(${idx})" class="flex-grow flex items-center gap-4"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><span class="material-icons-round">person</span></div><div><div class="font-bold text-gray-900">${c.name}</div><div class="text-xs text-gray-400">${c.phone}</div></div></div><button onclick="openAppointmentModal('${c.name}')" class="text-blue-600 bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center"><span class="material-icons-round">add</span></button></div>`;
+                list.innerHTML += `<div class="bg-white p-5 rounded-3xl flex justify-between items-center border border-gray-100 shadow-sm">
+                    <div onclick="openClientModal(${idx})" class="flex-grow flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><span class="material-icons-round">person</span></div>
+                        <div><div class="font-bold text-gray-900">${c.name}</div><div class="text-xs text-gray-400">${c.phone}</div></div>
+                    </div>
+                    <button onclick="openAppointmentModal('${c.name}')" class="text-blue-600 bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center"><span class="material-icons-round">add</span></button>
+                </div>`;
             });
         }
 
